@@ -5,7 +5,7 @@ import java.util.function.UnaryOperator;
 // ATOMIC REFERATION:
 // https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/atomic/AtomicReference.html
 
-class AtomicReference<Type> {
+public class AtomicReference<Type> {
 	private Type value;
 	private Object lock;
 	
