@@ -23,6 +23,7 @@ public class ReentrantLock implements Lock{
 	public void lock() {
 		Thread currenThread = Thread.currentThread();
 		
+		//l'idea e' che owner inizialmente e' = null, nel momento che owner = currentThread significa che ha acquisito il lock
 		synchronized (mutex) {
 			
 			// il counter non puo' essere < 0
