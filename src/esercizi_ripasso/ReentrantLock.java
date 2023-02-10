@@ -29,7 +29,7 @@ public class ReentrantLock implements Lock{
 			if (counter < 0) throw new IllegalMonitorStateException("counter < 0");
 			
 			// se owner non è null oppure non è il thread corrente allora ci blocchimo
-			while (owner != null || owner != currenThread) {
+			while (owner != null && owner != currenThread) {
 				try {
 					mutex.wait();
 				} catch (InterruptedException e) {
