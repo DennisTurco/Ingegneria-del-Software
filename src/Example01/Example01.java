@@ -1,5 +1,5 @@
 package Example01;
-
+//test
 class Example01 {
 	
 	private Object mutex = new Object(); // accessibile sia dal Waiter sia dal Notifier perche' sono inner class
