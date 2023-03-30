@@ -1,33 +1,30 @@
 package Example02;
+import concurrency.BlockingQueue;
 
-import it.unipr.informatica.concurrent.BlockingQueue;
+public class Consumer implements Runnable{
+    private BlockingQueue<String> queue;
+    private int id;
 
-class Consumer implements Runnable{
-	
-	private int id;
-	private BlockingQueue<String> queue;
-	
-	Consumer(int id, BlockingQueue<String> queue) {
-		// controllo errori
-		if (id < 0) throw new IllegalArgumentException("id < 0");
-		if (queue == null) throw new IllegalArgumentException("queue = null");
-		
-		// passaggio parametri
-		this.id = id;
-		this.queue = queue;
-	}
+    public Consumer(int id, BlockingQueue<String> queue) {    
+        if (queue == null) throw new IllegalArgumentException("queue == null");
+        if (id < 0) throw new IllegalArgumentException("id < 0");
 
-	@Override
-	public void run() {
-		try {
-			for (int i=0; i<5; ++i) {
+        this.queue = queue;
+        this.id = id;
+    }
+
+    @Override
+    public void run() {
+        try {
+            for (int i = 0; i < 5; ++i) {
 				String message = queue.take();
-				System.out.println("C" + id + " received " + message); 
-				Thread.sleep(100 + (int) (50 * Math.random()));
+				System.out.println("Consumer" + id + " received " + message);
+				Thread.sleep(40 + (int) (100 * Math.random()));
 			}
-			
-		} catch (InterruptedException interrupted) { 
-			System.err.println("Consumer " + id + " terminated"); 
-		} 
-	}
+
+        } catch(InterruptedException interrupted) {
+            System.err.println("Consumer: " + id + " interrupted!");
+            interrupted.printStackTrace();
+        }
+    }
 }
