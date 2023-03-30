@@ -1,26 +1,25 @@
 package Example03;
 
-import it.unipr.informatica.concurrent.ArrayBlockingQueue;
-import it.unipr.informatica.concurrent.BlockingQueue;
+import concurrency.ArrayBlockingQueue;
+import concurrency.BlockingQueue;
 
-class Example03 {
-	private void go() {
-		BlockingQueue<String> queue = new ArrayBlockingQueue<>(3);
+public class Example03 {
 
-		for (int i = 0; i < 5; ++i) {
-			Consumer consumer = new Consumer(i, queue);
+    public void go() {
+        BlockingQueue<String> queue = new ArrayBlockingQueue<>(3);
+        
+        for (int i=0; i<5; i++) {
+            Consumer consumer = new Consumer(i+1, queue);
+            new Thread(consumer).start();
+        }
 
-			new Thread(consumer).start();
-		}
+        for (int i=0; i<5; i++) {
+            Producer producer = new Producer(i+1, queue);
+            new Thread(producer).start();
+        }
+    }
 
-		for (int i = 0; i < 5; ++i) {
-			Producer producer = new Producer(i, queue);
-
-			new Thread(producer).start();
-		}
-	}
-	
-	public final static void main(String[] argv) {
-		new Example03().go();
-	}
+    public static void main(String[] args) {
+        new Example03().go();
+    }
 }
