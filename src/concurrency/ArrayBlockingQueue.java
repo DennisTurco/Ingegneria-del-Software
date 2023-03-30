@@ -3,8 +3,11 @@ package concurrency;
 import concurrency.locks.ReentrantLock;
 import concurrency.locks.Lock;
 
+//NOTA: nel dubbio se fare una signal() (notify()), o una signalAll() (notifyAll()), fare sempre una ...All() per essere sicuri
+
 public class ArrayBlockingQueue<Type> implements BlockingQueue<Type> {
 
+    //non potrebbe essere un tipo Type perchè se no fare: this.queue = new Type[size]; sarebbe errore, ma non è un problema perchè tanto non cambia nulla
     private Object[] queue;
     private int size;
     private int count;
@@ -32,15 +35,15 @@ public class ArrayBlockingQueue<Type> implements BlockingQueue<Type> {
             lock.lock();
 
             while (count == size){
-                isNotFull.await();
+                isNotFull.await(); //rimaniamo in attesa che le cose vadano a buon fine
             }
 
             queue[in] = elem;
             count++;
             in = (in + 1) % size;
-            isNotEmpty.signal();
+            isNotEmpty.signal(); // non è necessario eseguire una notifyAll(), basta svegliare un solo Thread
         }
-        finally {
+        finally { // il blocco finally viene sempre eseguito, sia se si verifica un eccezione, sia se non si verifica
             lock.unlock();
         }
 
@@ -62,7 +65,7 @@ public class ArrayBlockingQueue<Type> implements BlockingQueue<Type> {
             count--;
             out = (out + 1) % size;
 
-            isNotFull.signal();
+            isNotFull.signal(); // non è necessario eseguire una notifyAll(), basta svegliare un solo Thread
 
             return object;
         }
@@ -74,6 +77,11 @@ public class ArrayBlockingQueue<Type> implements BlockingQueue<Type> {
 
     @Override
     public int remainingCapacity() {
+
+        //ottengo il lock e il numero di celle libere che è il valore che ritorniamo
+
+		// non mi serve un costrutto try e catch perchè se la lock lancia un eccezione non viene lockato nulla quindi nessun problema
+
         lock.lock();
         int remaining = size - count;
         lock.unlock(); 
@@ -92,8 +100,12 @@ public class ArrayBlockingQueue<Type> implements BlockingQueue<Type> {
     public void clear() {
         lock.lock();
         queue = new Object[size];
-        in = out = count = 0;
+        in = out = count = 0; //coda sicuramente svuotata
+
+        //prima di fare la unlock sagnaliamo che la coda non è più piena (magari non la era anche prima)
+        //va eseguita una notifyAll() perchè grazie ad una clear lo spazio si è liberato e tutti possono entrare
         isNotFull.notifyAll();
+        
         lock.unlock(); 
     }
     

@@ -30,6 +30,7 @@ public class DownloadManager {
     }   
 
     private void downloadAndPlay(String url) {
+        // ByteArrayOutputStream stream di output in cui possiamo scrivere dati che man mano si allunga
         try (InputStream inputStream = new URL(url).openStream();
             BufferedInputStream bufferInputStream = new BufferedInputStream(inputStream);
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream() ) {

@@ -8,7 +8,7 @@ public class Example05 {
         manager.download("https://www.google.it");
         manager.download("https://www.youtube.it");
         manager.download("https://www.amazon.it");
-        manager.download("https://www.misswebsite.com");
+        manager.download("https://www.misswebsite.com"); // link volutamente errato
         manager.download("https://www.ebay.it");
         manager.download("https://www.maruko.it");
 

@@ -47,6 +47,7 @@ public class PersistentAspect {
             this.target = null;
         }
 
+		// permette di accedere all'oggetto a cui è stato appiccicato l'oggetto persistent
         @Override
         public T get() {
             if (target == null) throw new IllegalStateException("target == null");
@@ -54,11 +55,13 @@ public class PersistentAspect {
             return target;
         }
 
+		// carica l'oggetto dal file
         @Override
         public void rollback() throws IOException {
             load();
         }
 
+		// salva l'oggetto sul file
         @Override
         public void commit() throws IOException {
             save();
@@ -68,7 +71,7 @@ public class PersistentAspect {
 			try (InputStream inputStream = new FileInputStream(file);
 					BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStream);
 					ObjectInputStream objectInputStream = new ObjectInputStream(bufferedInputStream)) {
-				Object object = objectInputStream.readObject();
+				Object object = objectInputStream.readObject(); // si chiedono i dati all'object input stream che lo chiede al buffer input stream, che lo chiede al file input stream e quindi viene letto il file
 
 				@SuppressWarnings("unchecked")
 				T result = (T) object;
@@ -83,9 +86,11 @@ public class PersistentAspect {
 			if (target == null) throw new IllegalStateException("target == null");
 		}
 
+		// salvataggio su file
 		private void save() throws IOException {
 			if (target == null) throw new IllegalStateException("target == null");
 
+			// l'otput stream serve per scrivere su flussi di dati
 			try (OutputStream outputStream = new FileOutputStream(file);
 					BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(outputStream);
 					ObjectOutputStream objectOutputStream = new ObjectOutputStream(bufferedOutputStream)) {

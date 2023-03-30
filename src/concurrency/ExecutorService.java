@@ -8,7 +8,7 @@ public interface ExecutorService extends Executor{
     // Le submit servono per dare la task alla ThreadPool ed eseguirla
 
     // AGGIUNTO PER EXAMPLE 06
-    public Future<?> submit(Runnable tasks);
+    public Future<?> submit(Runnable tasks); // permette di mettersi in attesa che il Runnable sia terminato
     public <T> Future<T> submit(Callable<T> tasks);
 
     // AGGIUNTO PER EXAMPLE 07

@@ -16,11 +16,14 @@ public class LoggingAspect {
     public static <T> T attach(T target) {
         if (target == null) throw new IllegalArgumentException("target == null");
 
-        // ottengo le interfacce
+        // ottengo le interfacce prendendo le classi del target
         Class<?> targetClass = target.getClass();
+
+        // prendo le interfacce del target
         Class<?>[] targetInterfaces = targetClass.getInterfaces();
 
-        // creo l'oggetto proxy
+        // costruiamo un proxy che utilizza lo stesso class loader del target, utilizza le stesse interfacce del target
+		// e poi ci mette un giotte invocation handler
         Object proxy = Proxy.newProxyInstance(targetClass.getClassLoader(), targetInterfaces, new InnerInvocationHandler(target));
         
         @SuppressWarnings("unchecked") 
@@ -52,7 +55,7 @@ public class LoggingAspect {
                 Object result = method.invoke(target, arguments);
                 log("Out " + name + " " + result);
                 return result;
-            } catch (InvocationTargetException exception) {
+            } catch (InvocationTargetException exception) { //eccezione che proviene da invoke
                 Throwable cause = exception.getCause();
                 log("Out " + name + " " + cause.getMessage());
                 throw cause;

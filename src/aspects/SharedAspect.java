@@ -17,15 +17,26 @@ public class SharedAspect {
 
         // ottengo le interfacce
         Class<?> targetClass = target.getClass();
-        Class<?>[] targetInterfaces = targetClass.getInterfaces();
 
-        // creo l'oggetto proxy e chimo l'Handler
+        // dobbiamo ottenere tutte le interfacce
+		// perchè il proxy dovrà avere tutte le interfacce dell'oggetto target
+        Class<?>[] targetInterfaces = targetClass.getInterfaces();
+        
+        // il class loader è quello che è stato usato per caricare la classe da cui è stato costruito target
         Object proxy = Proxy.newProxyInstance(targetClass.getClassLoader(), targetInterfaces, new InnerInvocationHandler(target));
 
         @SuppressWarnings("unchecked")
         T result = (T) proxy;
         return result;
     }
+
+
+    // siccome questa è una classe che ha come unico scopo quello di offrire un metodo statico per la costruzione
+	// di questi oggetti, è una classe factory, in particolare non vogliamo che questa classe venga istanziata, e 
+	// blocchiamo la possibilità mettendo un unico costruttore vuoto e privato
+	private SharedAspect() {
+		// blank
+	}
 
 
     // INNER CLASS
@@ -42,10 +53,11 @@ public class SharedAspect {
         public Object invoke(Object proxy, Method method, Object[] arguments) throws Throwable {
             try {
                 synchronized (lock) {
+                    // invocazione del metodo sull'oggetto target
                     Object result = method.invoke(target, arguments);
                     return result;
                 }
-            } catch (InvocationTargetException exception) {
+            } catch (InvocationTargetException exception) { // lanciata da invoke
                 throw exception.getCause();
             } catch (Throwable throwable) {
                 throw throwable;

@@ -29,7 +29,7 @@ public class LinkedBlockingQueue<Type> implements BlockingQueue<Type>{
             Type object = queue.removeFirst();
 
             if (queue.size() > 0) {
-                queue.notify();
+                queue.notify(); //per essere certi avremmo potuto mettere notifyAll()
             }
 
             return object;
@@ -54,6 +54,11 @@ public class LinkedBlockingQueue<Type> implements BlockingQueue<Type>{
     @Override
     public void clear() {
         synchronized (queue) { 
+            // svuota tutta la coda in mutua esclusione
+
+			// queue = null; // tolgo riferimenti alla queue
+			// questo non lo facciamo perche' la clear pulisce semplicemente la coda
+            
             queue.clear();
         }
     }

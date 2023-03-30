@@ -31,7 +31,7 @@ public class SimpleFuture<T> implements Future<T> {
     @Override
     public T get() throws InterruptedException, ExecutionException {
         synchronized (mutex) {
-            if (!done) mutex.wait();
+            if (!done) mutex.wait(); // si puo' anche mettere while
 
             if (exception != null) throw new ExecutionException(exception);
 
@@ -46,6 +46,8 @@ public class SimpleFuture<T> implements Future<T> {
         }
     }
 
+    // il set del valore o dell'eccezione non sono comprese dall'interfaccia, e quindi verranno realizzati qui internamente
+	// ad ogni modo avranno una visibilita' protected
     public void setValue(T object) {
         synchronized (mutex) {
 

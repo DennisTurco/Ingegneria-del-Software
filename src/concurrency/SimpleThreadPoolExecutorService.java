@@ -61,6 +61,7 @@ public class SimpleThreadPoolExecutorService implements ExecutorService{
 
         SimpleFuture<?> future = new SimpleFuture<>();
 
+        // lambda-expression (implementazione di Runnable)
         execute(() -> {
             try {
                 tasks.run(); // esecuzione thread
@@ -80,6 +81,7 @@ public class SimpleThreadPoolExecutorService implements ExecutorService{
 
         SimpleFuture<T> future = new SimpleFuture<>();
 
+        // lambda-expression (implementazione di Runnable)
         execute(() -> {
             try {
                 T result = tasks.call();
@@ -99,6 +101,7 @@ public class SimpleThreadPoolExecutorService implements ExecutorService{
         if (task == null) throw new NullPointerException("task == null");
         if (callback == null) throw new NullPointerException("callback == null");
 
+        // lambda-expression (implementazione di Runnable)
         execute(() -> {
             try {
                 task.run(); // esecuzione thread
@@ -117,6 +120,7 @@ public class SimpleThreadPoolExecutorService implements ExecutorService{
         if (task == null) throw new NullPointerException("task == null");
         if (callback == null) throw new NullPointerException("callback == null");
         
+        // lambda-expression (implementazione di Runnable)
         execute(() -> {
             try {
                 T result = task.call();
@@ -154,7 +158,7 @@ public class SimpleThreadPoolExecutorService implements ExecutorService{
                 } catch (InterruptedException interruptedException) {
                     return;
                 } catch (Throwable throwable) {
-                    throwable.printStackTrace();
+                    throwable.printStackTrace(); // lo StackTrace e' una sequenza di chiamate da l'alto verso il basso che hanno generato l'eccezione
                 }
             }
         }

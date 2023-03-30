@@ -35,6 +35,7 @@ public class Example08 {
         }
     }
 
+    // metto il punto interrogativo perchè non so il tipo a tempo di compilazione
     private void dump(Class<?> clazz) {
         // stampo ill nome della classe
         System.out.println("Class: " + clazz.getName());
