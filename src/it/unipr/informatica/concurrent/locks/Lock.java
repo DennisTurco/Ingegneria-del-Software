@@ -1,12 +1,11 @@
-package it.unipr.informatica.concurrent.locks;
+package concurrency.locks;
 
-// https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/locks/Lock.html
+import concurrency.Condition;
 
 public interface Lock {
-	public void lock();
-	
-	public void unlock();
+    public void lock();
 
-	public Condition newCondition();
+    public void unlock();
 
+    public Condition newCondition();
 }

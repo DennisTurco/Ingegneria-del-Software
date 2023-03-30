@@ -1,5 +1,5 @@
-package it.unipr.informatica.concurrent;
+package concurrency;
 
 public interface Executor {
-	public void execute(Runnable command);
+    public void execute(Runnable command);
 }

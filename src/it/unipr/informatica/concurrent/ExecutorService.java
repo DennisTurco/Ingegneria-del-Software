@@ -1,9 +1,17 @@
-package it.unipr.informatica.concurrent;
+package concurrency;
 
 import java.util.concurrent.Callable;
 
-public interface ExecutorService extends Executor {
-	public void shutdown();
-	public Future<?> submit(Runnable task); // permette di mettersi in attesa che il Runnable sia terminato
-	public <Type> Future<Type> FormSubmitEvent(Callable<Type> task);
+public interface ExecutorService extends Executor{
+    public void shutdown();
+
+    // Le submit servono per dare la task alla ThreadPool ed eseguirla
+
+    // AGGIUNTO PER EXAMPLE 06
+    public Future<?> submit(Runnable tasks);
+    public <T> Future<T> submit(Callable<T> tasks);
+
+    // AGGIUNTO PER EXAMPLE 07
+    public void submit(Runnable task, Callback<?> callback);
+    public <T> void submit(Callable<T> task, Callback<T> callback); 
 }

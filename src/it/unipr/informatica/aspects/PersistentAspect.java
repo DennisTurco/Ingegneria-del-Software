@@ -1,4 +1,4 @@
-package it.unipr.informatica.aspects;
+package aspects;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -13,7 +13,8 @@ import java.io.OutputStream;
 import java.io.Serializable;
 
 public class PersistentAspect {
-	public static <T extends Serializable> PersistentHandler<T> attach(String fileName, T object) throws IOException {
+    
+    public static <T extends Serializable> PersistentHandler<T> attach(String fileName, T object) throws IOException {
 		return attach(new File(fileName), object);
 	}
 
@@ -24,46 +25,50 @@ public class PersistentAspect {
 
 		InnerPersistentHandler<T> handler = new InnerPersistentHandler<T>(file);
 
-		if (file.exists()) handler.load();
-		else handler.target = object;
+		if (file.exists()) {
+			handler.load();
+		}
+        else {
+			handler.target = object;
+        }
 
 		return handler;
 	}
 
-	private static class InnerPersistentHandler<T extends Serializable> implements PersistentHandler<T> {
-		private T target;
-		private File file;
 
-		private InnerPersistentHandler(File file) {
-			this.file = file;
-			this.target = null;
-		}
-		
-		// permette di accedere all'oggetto a cui è stato appiccicato l'oggetto persistent
-		@Override
-		public T get() {
-			if (target == null) throw new IllegalStateException("target == null");
+    // INNER CLASS
+    private static class InnerPersistentHandler<T extends Serializable> implements PersistentHandler<T> {
 
-			return target;
-		}
-		
-		// carica l'oggetto dal file
-		@Override
-		public void rollback() throws IOException {
-			load();
-		}
-		
-		// salva l'oggeeto sul file
-		@Override
-		public void commit() throws IOException {
-			save();
-		}
+        private File file;
+        private T target;
 
-		private void load() throws IOException {
+        private InnerPersistentHandler(File file) {
+            this.file = file;
+            this.target = null;
+        }
+
+        @Override
+        public T get() {
+            if (target == null) throw new IllegalStateException("target == null");
+
+            return target;
+        }
+
+        @Override
+        public void rollback() throws IOException {
+            load();
+        }
+
+        @Override
+        public void commit() throws IOException {
+            save();
+        }
+
+        private void load() throws IOException {
 			try (InputStream inputStream = new FileInputStream(file);
 					BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStream);
 					ObjectInputStream objectInputStream = new ObjectInputStream(bufferedInputStream)) {
-				Object object = objectInputStream.readObject(); // si chiedono i dati all'object input stream che lo chiede al buffer input stream, che lo chiede al file input stream e quindi viene letto il file 
+				Object object = objectInputStream.readObject();
 
 				@SuppressWarnings("unchecked")
 				T result = (T) object;
@@ -75,17 +80,12 @@ public class PersistentAspect {
 				throw new IOException(throwable);
 			}
 
-			if (target == null)
-				throw new IllegalStateException("target == null");
+			if (target == null) throw new IllegalStateException("target == null");
 		}
 
-		
-		// salvataggio su file
 		private void save() throws IOException {
-			if (target == null)
-				throw new IllegalStateException("target == null");
-			
-			// l'otput stream serve per scrivere su flussi di dati
+			if (target == null) throw new IllegalStateException("target == null");
+
 			try (OutputStream outputStream = new FileOutputStream(file);
 					BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(outputStream);
 					ObjectOutputStream objectOutputStream = new ObjectOutputStream(bufferedOutputStream)) {
@@ -96,5 +96,9 @@ public class PersistentAspect {
 				throw new IOException(throwable);
 			}
 		}
-	}
+
+    }
+
+
+
 }

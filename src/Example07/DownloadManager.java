@@ -1,4 +1,4 @@
-package Example06;
+package Example07;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
@@ -6,18 +6,19 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 
+import concurrency.Callback;
 import concurrency.ExecutorService;
-import concurrency.Future;
 import concurrency.Executors;
 
 public final class DownloadManager {
 	private static final int BUFFER_SIZE = 1024;
+
 	private ExecutorService executorService;
 
 	public DownloadManager(int connections) {
 		if (connections < 1) throw new IllegalArgumentException("connections < 1");
 
-		// creo un thread pool di n connessioni
+        // creo un thread pool di n connessioni
 		this.executorService = Executors.newFixedThreadPool(connections);
 	}
 
@@ -25,13 +26,10 @@ public final class DownloadManager {
 		executorService.shutdown();
 	}
 
-	public Future<ResourceContent> download(String url) {
+	public void download(String url, Callback<ResourceContent> callback) {
 		if (url == null) throw new IllegalArgumentException("url == null");
 
-		// () -> downloadResourceContent(url) sarebbe l'implementazione del Callable
-		// ottiene niente come parametri ()
-		// ritorna il risultato di downloadResourceContent(url)
-		return executorService.submit(() -> downloadResourceContent(url));   
+		executorService.submit(() -> downloadResourceContent(url), callback);
 	}
 
 	private ResourceContent downloadResourceContent(String url) throws IOException {
@@ -48,7 +46,7 @@ public final class DownloadManager {
 			}
 
 			byte[] data = outputStream.toByteArray();
-			
+
 			return new ResourceContent(url, data);
 		}
 	}

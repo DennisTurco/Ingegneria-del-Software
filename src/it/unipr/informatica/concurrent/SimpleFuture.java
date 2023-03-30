@@ -1,51 +1,81 @@
-package it.unipr.informatica.concurrent;
+package concurrency;
 
-import java.util.concurrent.ExecutionException;
+// un Oggetto Future e' una rapppresentazione di qualcosa che puo' esistere nel futuro
+// parametrico perche' il futoro puo' essere di qualsiasi tipo.
+// ci dice che nel futuro ci sara' qualcosa qui dentro, magari un eccezione, ma avremo qualcosa
+// come se fosse un oggetto in pending (in attesa) che potra' poi essere un valore o un eccezione
+// quando done e' true siquifica che ha finito di caricare
+public class SimpleFuture<T> implements Future<T> {
+    
+    // per la sezione critica
+    private Object mutex;
 
-public class SimpleFuture<Type> implements Future<Type> {
+    // risultato di tipo T
+    private T value;
 
-	private Object mutex;
-	private Type value;
-	private Throwable exception;
-	private boolean done;
-	
-	SimpleFuture() {
-		this.mutex = new Object();
-		this.done = false;
-		this.value = null;
-		this.exception = null;
-	}
-	
-	@Override
-	public Type get() throws InterruptedException, ExecutionException {
-		synchronized (exception) { //sezione critica, verifichiamo se c'e' l'eccezione o c'e' il valore
-			if(!done) mutex.wait(); // si puo' anche mettere while
-			if(exception != null) throw new ExecutionException(exception); // se exception non e' nullo vuol dire che l'eccezione e' stata lanciata e quindi la rilanciamo
-			// se invece la exception e' nulla va tutto bene e ritorniamo il valore
-			return value;
-		}
-	}
+    // booleano per capire se abbimo prodotto un risultato oppure eccezione
+    // se done e' true: abbiamo o eccezione o oggetto
+    // se done e' false non abbiamo nulla
+    private boolean done;
 
-	@Override
-	public boolean isDone() {
-		synchronized (mutex) {
-			return done;
-		}
-	}
-	
-	// il set del valore o dell'eccezione non sono comprese dall'interfaccia, e quindi verranno realizzati qui internamente
-	// ad ogni modo avranno una visibilita' protected
-	void setValue(Type object) {
-		synchronized (mutex) {
-			if (done) throw new IllegalStateException("done == true"); // bug, non puo' essere gia' stato messo a true
-			value = object;
-			done = true;
-			mutex.notifyAll(); // si svegliano tutti
-		}
-	}
-	
-	void setException(Throwable throwable) {
-		if (throwable == null) throw new 
-	}
+    // per memorizzare l'eccezione
+    private Throwable exception;
+
+    SimpleFuture() {
+        this.mutex = new Object();
+        this.done = false;
+        this.exception = null;
+        this.value = null;
+    }
+
+    @Override
+    public T get() throws InterruptedException, ExecutionException {
+        synchronized (mutex) {
+            if (!done) mutex.wait();
+
+            if (exception != null) throw new ExecutionException(exception);
+
+            return value;
+        }
+    }
+
+    @Override
+    public boolean isDone() {
+        synchronized (mutex) {
+            return done;
+        }
+    }
+
+    public void setValue(T object) {
+        synchronized (mutex) {
+
+            // controllo per vedere se qualcuno ha compromesso il valore di done
+            // se done == true significa che abbiamo gia' prodotto un risultato
+            if (done) throw new IllegalStateException("done == true"); 
+            
+            value = object;
+
+            // ha finito di caricare
+            done = true;
+            mutex.notifyAll();
+        }
+    }
+
+    public void setException(Throwable object) {
+        
+        if (object == null) throw new IllegalArgumentException("object == null");
+        
+        synchronized (mutex) {
+
+            // controllo per vedere se qualcuno ha compromesso il valore di done
+            if (done) throw new IllegalStateException("done == true"); 
+            
+            exception = object;
+
+            // ha finito di caricare
+            done = true;
+            mutex.notifyAll();
+        }
+    }
 
 }
