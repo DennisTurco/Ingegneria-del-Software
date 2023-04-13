@@ -3,14 +3,9 @@ package Example13;
 import java.util.ArrayList;
 import java.util.List;
 
-import it.unipr.informatica.aspects.PersistentAspect;
-import it.unipr.informatica.aspects.PersistentHandler;
-
-// immaginando che questo file sia in un project separato, esso sarebbe nel package:
-// "it.unipr.informatica.examples;"
-// dovremmo quindi aggiungere:
-// 	import it.unipr.informatica.examples.model.Book;
-// 	import it.unipr.informatica.examples.model.simple.SimpleBook;
+import aspects.PersistentAspect;
+import aspects.PersistentHandler;
+import Example13.examples.model.simple.SimpleBook;
 
 public class Example13 {
 	private void printAndAddBooks(List<Book> books) {

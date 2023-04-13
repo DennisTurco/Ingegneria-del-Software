@@ -5,48 +5,51 @@ import java.util.function.UnaryOperator;
 public class Example04 {
 
     private void go() {
-        AtomicReference<Integer> count = new AtomicReference<>(1); 
+        AtomicReference<Integer> counter = new AtomicReference<>(1);
         Incrementer incrementer = new Incrementer();
-        int i = count.get();
+        Integer i = counter.get();
 
         // MODO 1
-        while(i <= 10) {
+        while ((i = counter.get()) <= 10) {
             System.out.println(i);
-            i = count.updateAndGet(incrementer);
+            i = counter.updateAndGet(incrementer);
         }
 
         System.out.println();
 
         // MODO 2
-        UnaryOperator<Integer> operator = new UnaryOperator<Integer>() {
+        UnaryOperator<Integer> inc = new UnaryOperator<Integer>() {
             @Override
             public Integer apply(Integer value) {
                 return value+1;
-            }  
-        };      
-        
-        while (i <= 20) {
+            }
+        };
+
+        while ((i = counter.get()) <= 20) {
             System.out.println(i);
-            i = count.getAndUpdate(operator);
+            i = counter.updateAndGet(inc);
         }
+        
         
         System.out.println();
 
         // MODO 3
-        while (i <= 30) {
+        while ((i = counter.get()) <= 30) {
             System.out.println(i);
-            i = count.updateAndGet((x) -> {
+            i = counter.updateAndGet((x) -> {
                 return x+1;
-            });    
+            });
         }
+        
 
         System.out.println();
 
         //MODO 4
-        while (i <= 40) {
+        while ((i = counter.get()) <= 40) {
             System.out.println(i);
-            i = count.updateAndGet((x) -> x+1);
-        }
+            i = counter.updateAndGet((x) -> x+1 );
+        } 
+        
         
     }
 
@@ -55,12 +58,12 @@ public class Example04 {
     }
     
     // INNER CLASS
-    private static class Incrementer implements UnaryOperator<Integer> {
-
+    private class Incrementer implements UnaryOperator<Integer> {
         @Override
         public Integer apply(Integer value) {
             return value+1;
-        }
+        }  
 
     }
+    
 }

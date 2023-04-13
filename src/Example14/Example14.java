@@ -1,8 +1,8 @@
 package Example14;
 
-import it.unipr.informatica.aspects.ActiveAspect;
-import it.unipr.informatica.aspects.ActiveHandler;
-import it.unipr.informatica.concurrent.Future;
+import aspects.ActiveAspect;
+import aspects.ActiveHandler;
+import concurrency.Future;
 
 public class Example14 {	
 	

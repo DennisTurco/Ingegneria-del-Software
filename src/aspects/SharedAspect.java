@@ -15,7 +15,7 @@ public class SharedAspect {
     public static <T> T attach(T target) {
         if (target == null) throw new IllegalArgumentException("target == null");
 
-        // ottengo le interfacce
+        // ottengo la classe (ottenendone il nome completo, es. "class java.util.LinkedList")
         Class<?> targetClass = target.getClass();
 
         // dobbiamo ottenere tutte le interfacce
@@ -23,6 +23,7 @@ public class SharedAspect {
         Class<?>[] targetInterfaces = targetClass.getInterfaces();
         
         // il class loader è quello che è stato usato per caricare la classe da cui è stato costruito target
+        // l'obbiettivo e' quello di chiamare "invoke" sull'invocation handler
         Object proxy = Proxy.newProxyInstance(targetClass.getClassLoader(), targetInterfaces, new InnerInvocationHandler(target));
 
         @SuppressWarnings("unchecked")

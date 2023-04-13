@@ -13,23 +13,23 @@ public class LinkedBlockingQueue<T> implements BlockingQueue<T> {
     @Override
     public void put(T elem) throws InterruptedException {
         synchronized (queue) {
+
             queue.addLast(elem);
 
             if (queue.size() == 1) queue.notify();
-
         }
     }
 
     @Override
     public T take() throws InterruptedException {
         synchronized (queue) {
-            while (queue.size() == 0) queue.wait();
+            while(queue.size() == 0) queue.wait();
 
-            T object = queue.removeFirst();
+            T ris = queue.removeFirst();
 
-            if (queue.size() > 0) queue.notify();
-            
-            return object;
+            if (queue.size() > 0) queue.notifyAll(); 
+
+            return ris;
         }
     }
 
@@ -42,7 +42,9 @@ public class LinkedBlockingQueue<T> implements BlockingQueue<T> {
 
     @Override
     public int remainingCapacity() {
-        return Integer.MAX_VALUE;
+        synchronized (queue) {
+            return Integer.MAX_VALUE;
+        }
     }
 
     @Override

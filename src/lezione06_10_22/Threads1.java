@@ -1,6 +1,5 @@
 package lezione06_10_22;
 
-
 // PRIMO MODO
 class Threads1 implements Runnable{
 
@@ -9,7 +8,6 @@ class Threads1 implements Runnable{
 		// the body of the Thread
 		
 	}
-
 }
 
 
@@ -21,5 +19,4 @@ class Threads2 extends Thread{
 		// the body of the Thread
 		
 	}
-
 }

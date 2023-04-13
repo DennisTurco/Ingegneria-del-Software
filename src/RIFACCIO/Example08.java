@@ -1,5 +1,6 @@
 package RIFACCIO;
 
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -8,12 +9,11 @@ import java.util.Locale;
 import java.util.Scanner;
 
 public class Example08 {
-    
     private void go() {
-        try (Scanner scanner = new Scanner(System.in)) {
+        try (Scanner scanner = new Scanner(System.in)){
             scanner.useLocale(Locale.US);
 
-            System.out.print("insert class name: ");
+            System.out.println("Please, enter the fully qualified name of a class: ");
 
             String className = scanner.nextLine();
 
@@ -26,54 +26,58 @@ public class Example08 {
     private void show(String className) {
         try {
             Class<?> clazz = Class.forName(className);
-
             dump(clazz);
-
-        } catch (Throwable throwable) {
-            throwable.printStackTrace();
+        } catch (ClassNotFoundException exception) {
+            System.err.println("Cannot load " + className);
         }
     }
 
     private void dump(Class<?> clazz) {
         System.out.println("Class: " + clazz.getName());
 
+        Class<?> baseClass = clazz.getSuperclass();
+        if (baseClass != null) System.out.println("Base class: " + baseClass.getName());
+
         Class<?>[] interfaces = clazz.getInterfaces();
         for (int i=0; i<interfaces.length; ++i) {
-            System.out.println("Interface: " + interfaces[i].getName());
+            System.out.println("Implemented interface: " + interfaces[i].getName());
         }
 
         Field[] fields = clazz.getFields();
         for (int i=0; i<fields.length; ++i) {
-            System.out.println("Field: " + fields[i].getName());
+            System.out.println("Field: " + fields[i].getType() + " " + fields[i].getName());
         }
 
-        Constructor<?>[] constructor = clazz.getConstructors();
-        for (int i=0; i<constructor.length; ++i) {
-            System.out.print("Contructor: " + constructor[i].getName() + "(");
-            Parameter[] parameter = constructor[i].getParameters();
-            for (int j=0; j<parameter.length; ++j) {
-                System.out.print(parameter[j].getType() + parameter[j].getName());
-
-                if (j < parameter.length-1) {
+        Constructor<?>[] constructors = clazz.getConstructors();
+        for (int i=0; i<constructors.length; ++i) {
+            System.out.print("Constructor: " + constructors[i].getName() + "(");
+            Parameter[] parameters = constructors[i].getParameters();
+            for (int j=0; j<parameters.length; ++j) {
+                System.out.print(parameters[j].getType() + " " + parameters[j].getName());
+                
+                if (parameters.length-1 != j) {
                     System.out.print(", ");
                 }
             }
+
             System.out.println(")");
         }
 
         Method[] methods = clazz.getMethods();
         for (int i=0; i<methods.length; ++i) {
             System.out.print("Method: " + methods[i].getName() + "(");
-            Parameter[] parameter = methods[i].getParameters();
-            for (int j=0; j<parameter.length; ++j) {
-                System.out.print(parameter[j].getType() + parameter[j].getName());
-
-                if (j < parameter.length-1) {
+            Parameter[] parameters = methods[i].getParameters();
+            for (int j=0; j<parameters.length; ++j) {
+                System.out.print(parameters[j].getType() + " " + parameters[j].getName());
+                
+                if (parameters.length-1 != j) {
                     System.out.print(", ");
                 }
             }
+
             System.out.println(")");
         }
+
     }
 
     public static void main(String[] args) {

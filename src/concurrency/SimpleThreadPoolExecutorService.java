@@ -97,7 +97,6 @@ public class SimpleThreadPoolExecutorService implements ExecutorService{
     // AGGIUNTO PER EXAMPLE 07 - CON CALLBACK
     @Override
     public void submit(Runnable task, Callback<?> callback) {
-        
         if (task == null) throw new NullPointerException("task == null");
         if (callback == null) throw new NullPointerException("callback == null");
 
@@ -116,7 +115,6 @@ public class SimpleThreadPoolExecutorService implements ExecutorService{
     // AGGIUNTO PER EXAMPLE 07 - CON CALLBACK
     @Override
     public <T> void submit(Callable<T> task, Callback<T> callback) {
-
         if (task == null) throw new NullPointerException("task == null");
         if (callback == null) throw new NullPointerException("callback == null");
         

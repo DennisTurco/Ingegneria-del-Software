@@ -13,6 +13,11 @@ import java.io.OutputStream;
 import java.io.Serializable;
 
 public class PersistentAspect {
+
+	// non voglio che questa classe venga istanziata
+	private PersistentAspect() {
+		// blank
+	}
     
     public static <T extends Serializable> PersistentHandler<T> attach(String fileName, T object) throws IOException {
 		return attach(new File(fileName), object);
@@ -25,6 +30,7 @@ public class PersistentAspect {
 
 		InnerPersistentHandler<T> handler = new InnerPersistentHandler<T>(file);
 
+		// se il file esiste viene caricato e reimpostato a valori esistenti
 		if (file.exists()) {
 			handler.load();
 		}
@@ -47,7 +53,7 @@ public class PersistentAspect {
             this.target = null;
         }
 
-		// permette di accedere all'oggetto a cui è stato appiccicato l'oggetto persistent
+		// permette di accedere all'oggetto a cui è stato attaccato l'oggetto persistent
         @Override
         public T get() {
             if (target == null) throw new IllegalStateException("target == null");
@@ -83,7 +89,7 @@ public class PersistentAspect {
 				throw new IOException(throwable);
 			}
 
-			if (target == null) throw new IllegalStateException("target == null");
+			if (target == null) throw new IllegalStateException("target == null"); //??? non dovrebbe essere in un finally??
 		}
 
 		// salvataggio su file

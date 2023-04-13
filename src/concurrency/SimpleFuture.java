@@ -1,10 +1,10 @@
 package concurrency;
 
 // un Oggetto Future e' una rapppresentazione di qualcosa che puo' esistere nel futuro
-// parametrico perche' il futoro puo' essere di qualsiasi tipo.
+// parametrico perche' in futuro puo' essere di qualsiasi tipo.
 // ci dice che nel futuro ci sara' qualcosa qui dentro, magari un eccezione, ma avremo qualcosa
-// come se fosse un oggetto in pending (in attesa) che potra' poi essere un valore o un eccezione
-// quando done e' true siquifica che ha finito di caricare
+// come se fosse un oggetto in pending (in attesa) che potra' poi essere un valore o un eccezione.
+// quando done e' true siqnifica che ha finito di caricare
 public class SimpleFuture<T> implements Future<T> {
     
     // per la sezione critica
@@ -53,7 +53,7 @@ public class SimpleFuture<T> implements Future<T> {
 
             // controllo per vedere se qualcuno ha compromesso il valore di done
             // se done == true significa che abbiamo gia' prodotto un risultato
-            if (done) throw new IllegalStateException("done == true"); 
+            if (done) throw new IllegalStateException("done == true");  // va dentro al syncronized perche' sto controllando un attributo della classe
             
             value = object;
 
