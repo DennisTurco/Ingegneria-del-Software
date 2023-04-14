@@ -1,7 +1,5 @@
 package concurrency.locks;
 
-import concurrency.Condition;
-
 public class ReentrantLock implements Lock{
 
     // owner del lock
@@ -22,7 +20,7 @@ public class ReentrantLock implements Lock{
     @Override
     public void lock() {
 
-        Thread currentThread = new Thread();
+        Thread currentThread = Thread.currentThread();
 
         synchronized (mutex) {
             if (counter < 0) throw new IllegalMonitorStateException("counter < 0");

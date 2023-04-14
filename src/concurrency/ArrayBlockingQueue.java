@@ -1,19 +1,17 @@
 package concurrency;
 
 import concurrency.locks.ReentrantLock;
+import concurrency.locks.Condition;
 import concurrency.locks.Lock;
 
 //NOTA: nel dubbio se fare una signal() (notify()), o una signalAll() (notifyAll()), fare sempre una ...All() per essere sicuri
 
-public class ArrayBlockingQueue<Type> implements BlockingQueue<Type> {
+public class ArrayBlockingQueue<T> implements BlockingQueue<T> {
 
-    //non potrebbe essere un tipo Type perchè se no fare: this.queue = new Type[size]; sarebbe errore, ma non è un problema perchè tanto non cambia nulla
+    //non potrebbe essere un tipo T perchè se no fare: this.queue = new T[size]; sarebbe errore, ma non è un problema perchè tanto non cambia nulla
     private Object[] queue;
-    private int size;
-    private int count;
+    private int size, count;
     private Lock lock;
-    private int in = 0;
-    private int out = 0;
     private Condition isNotEmpty, isNotFull;
 
     public ArrayBlockingQueue(int size) {
@@ -22,14 +20,14 @@ public class ArrayBlockingQueue<Type> implements BlockingQueue<Type> {
         this.size = size;
         this.queue = new Object[size];
         this.count = 0;
-        this.in = 0;
-        this.out = 0;
         this.lock = new ReentrantLock();
+        this.isNotEmpty = lock.newCondition();
+		this.isNotFull = lock.newCondition();
     }
 
     @Override
-    public void put(Type elem) throws InterruptedException {
-        if (queue == null) throw new NullPointerException("queue == null");
+    public void put(T elem) throws InterruptedException {
+        if (elem == null) throw new NullPointerException("queue == null");
         
         try {
             lock.lock();
@@ -38,9 +36,8 @@ public class ArrayBlockingQueue<Type> implements BlockingQueue<Type> {
                 isNotFull.await(); //rimaniamo in attesa che le cose vadano a buon fine
             }
 
-            queue[in] = elem;
-            count++;
-            in = (in + 1) % size;
+            queue[count] = elem;
+            ++count;
             isNotEmpty.signal(); // non è necessario eseguire una notifyAll(), basta svegliare un solo Thread
         }
         finally { // il blocco finally viene sempre eseguito, sia se si verifica un eccezione, sia se non si verifica
@@ -50,9 +47,7 @@ public class ArrayBlockingQueue<Type> implements BlockingQueue<Type> {
     }
 
     @Override
-    public Type take() throws InterruptedException {
-        if (queue == null) throw new NullPointerException("queue == null");
-        
+    public T take() throws InterruptedException {
         try {
             lock.lock();
             
@@ -61,10 +56,9 @@ public class ArrayBlockingQueue<Type> implements BlockingQueue<Type> {
             }
 
             @SuppressWarnings("unchecked")
-            Type object = (Type) queue[out];
-            count--;
-            out = (out + 1) % size;
-
+            T object = (T) queue[count-1];
+            queue[count-1] = null;
+            --count;
             isNotFull.signal(); // non è necessario eseguire una notifyAll(), basta svegliare un solo Thread
 
             return object;
@@ -100,7 +94,7 @@ public class ArrayBlockingQueue<Type> implements BlockingQueue<Type> {
     public void clear() {
         lock.lock();
         queue = new Object[size];
-        in = out = count = 0; //coda sicuramente svuotata
+        count = 0;
 
         //prima di fare la unlock sagnaliamo che la coda non è più piena (magari non la era anche prima)
         //va eseguita una notifyAll() perchè grazie ad una clear lo spazio si è liberato e tutti possono entrare
