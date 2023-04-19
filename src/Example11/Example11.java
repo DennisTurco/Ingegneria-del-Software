@@ -4,7 +4,25 @@ import java.util.LinkedList;
 import java.util.List;
 
 import aspects.SharedAspect;
-
+/*
+ * Il codice fornito mostra un esempio di utilizzo della classe `Thread` per
+ * eseguire più thread contemporaneamente. Il metodo `go` crea una lista vuota
+ * di interi (`LinkedList<Integer>`) e quindi inizia a eseguire 10 thread. Ogni
+ * thread aggiunge 10000 interi alla lista. Il motivo per cui vengono creati 10
+ * thread diversi è per dimostrare la concorrenza. Se solo un thread fosse stato
+ * utilizzato, l'aggiunta di 10000 interi alla lista sarebbe stata eseguita in
+ * modo sequenziale, un elemento alla volta. Invece, l'utilizzo di 10 thread
+ * diversi significa che gli elementi vengono aggiunti in modo concorrente, il
+ * che può portare a problemi di sincronizzazione e prestazioni. Dopo aver
+ * eseguito tutti i thread, il codice attende per 5 secondi (utilizzando il
+ * metodo `Thread.sleep()`), quindi stampa la dimensione della lista. Poiché il
+ * metodo `add()` della lista non è thread-safe, il risultato potrebbe non
+ * essere quello atteso. In altre parole, il numero di elementi nella lista
+ * potrebbe non essere esattamente 100000, ma potrebbe essere maggiore o minore
+ * a seconda di come i thread sono stati eseguiti. Il metodo `main` crea
+ * un'istanza della classe `Example11` e richiama il metodo `go` per avviare
+ * l'esecuzione dei thread.
+ */
 public class Example11 {
     
     private void go() {
