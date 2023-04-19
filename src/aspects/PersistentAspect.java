@@ -26,6 +26,8 @@ public class PersistentAspect {
 	public static <T extends Serializable> PersistentHandler<T> attach(File file, T object) throws IOException {
 		if (object == null) throw new IllegalArgumentException("object == null");
 		if (file == null) throw new IllegalArgumentException("file == null");
+		//Questo è un modo per garantire che il parametro file passato a un metodo debba essere un file regolare esistente. Se il parametro non è un file regolare esistente, 
+		//viene sollevata un'eccezione per segnalare l'errore e interrompere l'esecuzione del metodo.
 		if (file.exists() && !file.isFile()) throw new IllegalArgumentException("file.exists() && !file.isFile()");
 
 		InnerPersistentHandler<T> handler = new InnerPersistentHandler<T>(file);
@@ -73,6 +75,16 @@ public class PersistentAspect {
             save();
         }
 
+	    /*
+	 Il codice utilizza un costrutto `try-with-resources` per aprire un file e leggere un oggetto dalla sorgente dati. 
+	Il costrutto `try-with-resources` in Java è utilizzato per gestire automaticamente le risorse come i file e le connessioni al database. 
+	In questo caso, l'oggetto `InputStream` viene creato per aprire il file, e viene utilizzato un oggetto `BufferedInputStream` 
+	per migliorare le prestazioni delle operazioni di lettura. Infine, viene utilizzato un oggetto `ObjectInputStream` per leggere 
+	l'oggetto dalla sorgente dati.
+
+	Il metodo `readObject()` dell'oggetto `ObjectInputStream` viene utilizzato per leggere l'oggetto dalla sorgente dati. 
+	Questo metodo restituisce un oggetto generico di tipo `Object`, che deve essere convertito nel tipo `T` utilizzando il casting.
+	    */
         private void load() throws IOException {
 			try (InputStream inputStream = new FileInputStream(file);
 					BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStream);
