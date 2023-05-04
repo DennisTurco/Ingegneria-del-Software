@@ -6,7 +6,7 @@ import java.util.NoSuchElementException;
 
 public class LinkedQueue implements Queue {
 	
-	private List<Object> queue;
+	protected List<Object> queue;
 	
 	public LinkedQueue() {
 		this.queue = new LinkedList<>();

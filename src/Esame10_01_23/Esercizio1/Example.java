@@ -4,9 +4,10 @@ public class Example {
 	
 	private void go() {
 		
-		//ArrayQueue queue = new ArrayQueue(5);
-		LinkedQueue queue = new LinkedQueue();
+		//Queue queue = new ArrayQueue(5);
+		MyQueue queue = new MyQueue(new LinkedQueue());
 		
+		System.out.println(queue.getClass().getName());
 		
 		queue.push(1);
 		queue.push(2);
@@ -15,7 +16,7 @@ public class Example {
 		queue.push(5);
 		
 		// stampa
-		for (int i=0; i<6; ++i) {
+		for (int i=0; i<5; ++i) {
 			System.out.println(queue.pop() + " ");
 		}
 	}
