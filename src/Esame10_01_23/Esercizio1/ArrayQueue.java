@@ -2,7 +2,7 @@ package Esame10_01_23.Esercizio1;
 
 import java.util.NoSuchElementException;
 
-public class ArrayQueue implements Queue{
+public class ArrayQueue implements Queue {
 	
 	private Object[] queue;
 	private int counter;

@@ -1,32 +1,24 @@
 package Esame10_01_23.Esercizio1;
 
-import java.util.NoSuchElementException;
+public class MyQueue extends BridgeQueue{
 
-public class MyQueue extends QueueBridge {
-	
-	Queue type;
-	
 	protected MyQueue(Queue queue) {
 		super(queue);
-		this.type = queue;
-	}
-	
-	@Override
-	boolean isEmpty() {
-		return type.isEmpty();
 	}
 
 	@Override
-	void push(Object o) {
-		type.push(o);
-		
+	public void push(Object value) {
+		queue.push(value);
 	}
 
 	@Override
-	Object pop() throws NoSuchElementException {
-		return type.pop();
+	public Object pop() {
+		return queue.pop();
 	}
-	
-	
+
+	@Override
+	public boolean isEmpty() {
+		return queue.isEmpty();
+	}
 
 }

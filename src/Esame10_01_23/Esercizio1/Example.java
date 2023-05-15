@@ -4,8 +4,8 @@ public class Example {
 	
 	private void go() {
 		
-		//Queue queue = new ArrayQueue(5);
-		MyQueue queue = new MyQueue(new LinkedQueue());
+		//BridgeQueue queue = new Array(new ArrayQueue(5));
+		BridgeQueue queue = new MyQueue(new LinkedQueue());
 		
 		System.out.println(queue.getClass().getName());
 		
