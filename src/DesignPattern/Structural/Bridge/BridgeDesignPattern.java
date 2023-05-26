@@ -7,113 +7,79 @@ Goal:
 */
 
 
-//--------------------
-abstract class BridgeDesignPattern {
-	Remote remote;
-	
-	BridgeDesignPattern(Remote remote) {
-		this.remote = remote;
-	}
-	
-	abstract void on();
-	abstract void off();
+//-------------------- Implementer for bridge pattern
+interface Workshop {
+    public void work();
 }
 
-//--------------------
-class Sony extends BridgeDesignPattern {
-	Remote remoteType;
-	
-	Sony(Remote remote) {
-		super(remote);
-		this.remoteType = remote;
-	}
-	
-	public void on() {
-		System.out.println("Sony TV ON: ");
-		remoteType.on();
-	}
-	
-	public void off() {
-		System.out.println("Sony TV OFF: ");
-		remoteType.off();
-	}
+//-------------------- Concrete implementation 1 for bridge pattern
+class Produce implements Workshop {
+    @Override
+    public void work() {
+        System.out.print("Produced");
+    }
+}
+
+//-------------------- Concrete implementation 2 for bridge pattern
+class Assemble implements Workshop {
+    @Override
+    public void work() {
+        System.out.print(" And");
+        System.out.println(" Assembled.");
+    }
 }
 
 
-//--------------------
-class Philip extends BridgeDesignPattern {
-	Remote remoteType;
-	
-	Philip(Remote remote) {
-		super(remote);
-		this.remoteType = remote;
-	}
-	
-	public void on() {
-		System.out.println("Philip TV ON: ");
-		remoteType.on();
-	}
-	
-	public void off() {
-		System.out.println("Philip TV OFF: ");
-		remoteType.off();
-	}
+//---------------------- abstraction in bridge pattern
+abstract class Vehicle {
+    protected Workshop workShop1;
+    protected Workshop workShop2;
+ 
+    protected Vehicle(Workshop workShop1, Workshop workShop2) {
+        this.workShop1 = workShop1;
+        this.workShop2 = workShop2;
+    }
+ 
+    abstract public void manufacture();
 }
 
-//--------------------
-interface Remote {
-	public void on();
-	public void off();
+
+//-------------------- Refine abstraction 1 in bridge pattern
+class Car extends Vehicle {
+    public Car(Workshop workShop1, Workshop workShop2) {
+        super(workShop1, workShop2);
+    }
+ 
+    @Override
+    public void manufacture() {
+        System.out.print("Car ");
+        workShop1.work();
+        workShop2.work();
+    }
 }
 
-//--------------------
-class OldRemote implements Remote {
-	@Override
-	public void on() {
-		System.out.println("ON with Old Remote");
-	}
 
-	@Override
-	public void off() {
-		System.out.println("OFF with Old Remote");
-	}
+//-------------------- Refine abstraction 2 in bridge pattern
+class Bike extends Vehicle {
+    public Bike(Workshop workShop1, Workshop workShop2) {
+        super(workShop1, workShop2);
+    }
+ 
+    @Override
+    public void manufacture() {
+        System.out.print("Bike ");
+        workShop1.work();
+        workShop2.work();
+    }
 }
 
-//--------------------
-class NewRemote implements Remote {
 
-	@Override
-	public void on() {
-		System.out.println("ON with New Remote");
-	}
-
-	@Override
-	public void off() {
-		System.out.println("OFF with New Remote");
-	}
-}
-
-//--------------------
-class BridgeDisignPattern {
-	public static void main(String[] args) {
-		BridgeDesignPattern sonyOldRemote = new Sony(new OldRemote());
-		sonyOldRemote.on();
-		sonyOldRemote.off();
-		System.out.println();
-		
-		BridgeDesignPattern sonyNewRemote = new Sony(new NewRemote());
-		sonyNewRemote.on();
-		sonyNewRemote.off();
-		System.out.println();
-		
-		BridgeDesignPattern philipsOldRemote = new Philip(new OldRemote());
-		philipsOldRemote.on();
-		philipsOldRemote.off();
-		System.out.println();
-		
-		BridgeDesignPattern philipsNewRemote = new Philip(new NewRemote());
-		philipsNewRemote.on();
-		philipsNewRemote.off();
-		System.out.println();
-	}
+//-------------------- Demonstration of bridge design pattern
+class BridgeDesignPattern {
+    public static void main(String[] args) {
+        Vehicle vehicle1 = new Car(new Produce(), new Assemble());
+        vehicle1.manufacture();
+        Vehicle vehicle2 = new Bike(new Produce(), new Assemble());
+        vehicle2.manufacture();
+    }
 }
