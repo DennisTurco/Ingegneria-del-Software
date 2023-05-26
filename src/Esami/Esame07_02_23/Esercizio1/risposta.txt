@@ -1,0 +1,23 @@
+1. elencare e descrivere brevemente almeno 2 problemi di coordinazione.
+RISPOSTA: 
+	i possibili problemi di coordinazione sono:
+	- shared data;
+	- double maintenance;
+	- simultaneus update;
+	
+	Il problema di shared data si verifica quando piu' dati sono condivisi fra piu' persono risulta complesso lavorare sulle stesse risorse senza conflitti.
+	Il problema di double maintenance si verifica quando 2 utenti eseguono modifiche nello stesso file/directory.
+	Il problema di simultaneus update si verifica quando 2 utenti eseguono update simultanei nello stesso file/directory.
+	
+
+2. Elencare e descrivere brevemente almeno 2 strategie di coordinazione. 
+RISPOSTA:
+	le possibili soluzioni ai problemi precedentemente elencati sono: 
+	- Creare workspace locali in modo tale che ogni utente puo' lavorare sulla propria copia della cartella condivisa senza conflitti.
+	- Copy-write ovvero scrittura delle modifiche locali nella repository condivisa nel file server.
+	- Copy-add ovvero nuova versione (versioning) della repository centrale.
+
+3. Descrivere brevemente il significato dei termini check-in e check-out.
+RISPOSTA:
+	check-in caricamento delle modifiche fatte nella workspace private creando una nuova versione nella repository condivisa.
+	check-out quando si aggiorna la propria workspace private con le modifiche della repository condivisa.
