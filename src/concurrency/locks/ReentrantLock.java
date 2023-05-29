@@ -5,7 +5,9 @@ public class ReentrantLock implements Lock{
     // owner del lock
     private Thread owner;
 
-    // contiamo gili accessi alla lock ed unlock
+    // contiamo gli accessi alla lock ed unlock
+    // lo stesso thread potrebbe fare piu' lock alla stessa risorsa per aumentare i livelli di lock.
+    // lo stesso thread per esempio puo' loccare 3 volte, poi pero' devo unloccare 3 volte per liberare la risorsa.
     private int counter;
 
     // per fare la sincronizzazione
