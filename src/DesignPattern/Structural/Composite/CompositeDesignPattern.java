@@ -57,7 +57,11 @@ class Manager implements Employee {
 
 //-----------------------
 class CompanyDirectory implements Employee {
-    private List<Employee> employeeList = new ArrayList<Employee>();
+    private List<Employee> employeeList;
+    
+    public CompanyDirectory() {
+    	employeeList = new ArrayList<Employee>();
+    }
         
     @Override
     public void showEmployeeDetails() {

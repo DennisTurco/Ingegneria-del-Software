@@ -6,80 +6,148 @@ Goal:
 	"decouple the functional abstraction from the implementation so that the two can vary independently".
 */
 
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
-//-------------------- Implementer for bridge pattern
-interface Workshop {
-    public void work();
-}
-
-//-------------------- Concrete implementation 1 for bridge pattern
-class Produce implements Workshop {
-    @Override
-    public void work() {
-        System.out.print("Produced");
-    }
-}
-
-//-------------------- Concrete implementation 2 for bridge pattern
-class Assemble implements Workshop {
-    @Override
-    public void work() {
-        System.out.print(" And");
-        System.out.println(" Assembled.");
-    }
+// ---------------------------- Interface
+interface Queue {
+	public void push(Object elem);
+	public Object take();
 }
 
 
-//---------------------- abstraction in bridge pattern
-abstract class Vehicle {
-    protected Workshop workShop1;
-    protected Workshop workShop2;
- 
-    protected Vehicle(Workshop workShop1, Workshop workShop2) {
-        this.workShop1 = workShop1;
-        this.workShop2 = workShop2;
-    }
- 
-    abstract public void manufacture();
+//---------------------------- class 1
+class LinkedQueue implements Queue {
+	
+	private List<Object> queue;
+	
+	public LinkedQueue() {
+		this.queue = new LinkedList<>();
+	}
+	
+	@Override
+	public void push(Object elem) {
+		if (elem == null) throw new NullPointerException("elem == null");
+		
+		synchronized (queue) {
+			queue.add(elem);
+			queue.notify();
+		}
+	}
+
+	@Override
+	public Object take() {
+		synchronized (queue) {
+			while(queue.size() == 0) {
+				try {
+					queue.wait();
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+				
+			Object elem = queue.remove(0);
+			
+			return elem;
+		}
+	}
+	
 }
 
 
-//-------------------- Refine abstraction 1 in bridge pattern
-class Car extends Vehicle {
-    public Car(Workshop workShop1, Workshop workShop2) {
-        super(workShop1, workShop2);
-    }
- 
-    @Override
-    public void manufacture() {
-        System.out.print("Car ");
-        workShop1.work();
-        workShop2.work();
-    }
+//---------------------------- class 2
+class ArrayQueue implements Queue {
+	
+	private List<Object> queue;
+	
+	public ArrayQueue() {
+		this.queue = new ArrayList<>(); 
+	}
+
+	@Override
+	public void push(Object elem) {
+		if (elem == null) throw new NullPointerException("elem == null");
+		
+		synchronized (queue) {
+			queue.add(elem);
+			queue.notify();
+		}
+	}
+
+	@Override
+	public Object take() {
+		synchronized (queue) {
+			while (queue.size() == 0) {
+				try {
+					queue.wait();
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+			
+			Object elem = queue.remove(0);
+			return elem;
+		}
+	}	
 }
 
 
-//-------------------- Refine abstraction 2 in bridge pattern
-class Bike extends Vehicle {
-    public Bike(Workshop workShop1, Workshop workShop2) {
-        super(workShop1, workShop2);
-    }
- 
-    @Override
-    public void manufacture() {
-        System.out.print("Bike ");
-        workShop1.work();
-        workShop2.work();
-    }
+//---------------------------- Abstraction
+abstract class BridgeQueue {
+	protected Queue queue;
+	
+	protected BridgeQueue(Queue queue) {
+		this.queue = queue;
+	}
+	
+	public abstract void push(Object elem);
+	public abstract Object pop();
 }
 
 
-//-------------------- Demonstration of bridge design pattern
-class BridgeDesignPattern {
-    public static void main(String[] args) {
-        Vehicle vehicle1 = new Car(new Produce(), new Assemble());
-        vehicle1.manufacture();
-        Vehicle vehicle2 = new Bike(new Produce(), new Assemble());
-        vehicle2.manufacture();
-    }
+//---------------------------- abstraction extender
+class myQueue extends BridgeQueue {
+
+	protected myQueue(Queue queue) {
+		super(queue);
+	}
+
+	@Override
+	public void push(Object elem) {
+		queue.push(elem);
+	}
+
+	@Override
+	public Object pop() {
+		return queue.take();
+	}
+	
+	
+	
+}
+
+
+//---------------------------- main
+public class BridgeDesignPattern {
+	public static void main(String[] args) {
+		myQueue queue = new myQueue(new ArrayQueue());
+		
+		for (int i = 0; i<10; ++i) {
+			new Thread(() -> {
+				System.out.println("Thread Consumer: " + Thread.currentThread().getName() + " " + queue.pop());
+			}).start();
+			
+		}
+		
+		for (int i = 0; i<10; ++i) {
+			int id = i;
+			new Thread(() -> {
+				System.out.println("Thread Producer: " + Thread.currentThread().getName() + " " + id);
+				queue.push(id);
+			}).start();;
+			
+		}
+				
+	}
 }

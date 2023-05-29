@@ -41,7 +41,7 @@ class IEDriver {
 //--------------------
 class WebDriverAdapter implements WebDriver {
 
-	IEDriver ieDriver;
+	private IEDriver ieDriver;
   
 	public WebDriverAdapter(IEDriver ieDriver) {
 		this.ieDriver = ieDriver;
