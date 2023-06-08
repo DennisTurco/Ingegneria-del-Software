@@ -1,66 +1,82 @@
 package Esami.Esame14_09_22Laboratorio;
 
-import java.util.Random;
-
 public class ResourceManagerImpl implements ResourceManager {
 	
+	private Worker[] workers;
+	private boolean[] resources;
 	private static ResourceManagerImpl instance;
-	private boolean[] free;
 	
-	private ResourceManagerImpl(int nResources, int nWorkers) {
-		this.free = new boolean[nResources];
-		for (int i=0; i<nResources; ++i) {
-			free[i] = true;
+	private ResourceManagerImpl(int resorcesCount, int workersCount) {
+		if (resorcesCount <= 0) throw new IllegalArgumentException("resourcesCount <= 0");
+		if (workersCount <= 0) throw new IllegalArgumentException("workersCount <= 0");
+		
+		this.resources = new boolean[resorcesCount];
+		for (int i=0; i<resorcesCount; ++i) {
+			resources[i] = true;
 		}
 		
-		for (int i=0; i<nWorkers; ++i) {
-			Worker worker = new Worker(nResources);
-			worker.start();
+		this.workers = new Worker[workersCount];
+		for (int i=0; i<workersCount; ++i) {
+			Worker worker = new Worker(resorcesCount);
+			workers[i] = worker;
 		}
 	}
 	
 	// singleton
-	public static ResourceManagerImpl getInstance(int nResources, int nWorkers) {
+	public static ResourceManagerImpl getInstance(int resorcesCount, int workersCount) {
 		if (instance == null) {
 			synchronized (ResourceManagerImpl.class) {
 				if (instance == null) {
-					instance = new ResourceManagerImpl(nResources, nWorkers);
+					instance = new ResourceManagerImpl(resorcesCount, workersCount);
 				}
 			}
 		}
 		return instance;
 	}
 	
+	
+	public void startAcquiring(int i) {
+		workers[i].start();
+	}
+	
+	public void shutdown() {
+		for (Worker worker: workers) {
+			worker.shutdown();
+		}
+	}
+	
 	@Override
 	public void acquireResources(int i, int j) {
-		if (i == j) throw new IllegalArgumentException("i == j");
-		
 		synchronized (this) {
-			while (!free[i] || !free[j]) {
+			
+			while (!resources[i] || !resources[j]) {
 				try {
 					this.wait();
 				} catch (InterruptedException e) {
-					e.printStackTrace();
+					throw new RuntimeException("terminated while acquiring a resource: " + i + ", " + j);
 				} 
 			}
 			
-			free[i] = false;
-			free[j] = false;
-			System.out.println("Thread: " + Thread.currentThread().getName() +  " --> Resources: " + i + ", " + j + " acquired");
+			resources[i] = false;
+			resources[j] = false;
+			
+			System.out.println("Thread: " + Thread.currentThread().getName() + ", Resource: " + i + " acquired");
+			System.out.println("Thread: " + Thread.currentThread().getName() + ", Resource: " + j + " acquired");
 		}
 	}
 
 	@Override
-	public void freeResource(int i, int j) {
-		if (i == j) throw new IllegalArgumentException("i == j"); 
+	public void freeResources(int i, int j) {
 		
 		synchronized (this) {
-			free[i] = true;
-			free[j] = true;
 			
-			this.notify();
+			resources[i] = true;
+			resources[j] = true;
 			
-			System.out.println("Thread: " + Thread.currentThread().getName() +  " --> Resources: " + i + ", " + j + " released");
+			this.notifyAll();
+			
+			System.out.println("Thread: " + Thread.currentThread().getName() + ", Resource: " + i + " released");
+			System.out.println("Thread: " + Thread.currentThread().getName() + ", Resource: " + j + " released");
 		}
 	}
 	
@@ -68,33 +84,43 @@ public class ResourceManagerImpl implements ResourceManager {
 	// INNER CLASS
 	private class Worker implements Runnable {
 		
-		private int nResources;
 		private Thread thread;
+		private final int resourcesCount;
 		
-		private Worker(int nResources) {
-			this.nResources = nResources;
+		private Worker(int resourcesCount) {
 			this.thread = new Thread(this);
+			this.resourcesCount = resourcesCount;
 		}
 		
 		@Override
 		public void run() {
-			Random random = new Random();
-			int i = (int) random.nextInt(nResources);
-			int j = (int) random.nextInt(nResources);
-			
-			acquireResources(i, j);
-			
-			try {
-				Thread.sleep(100 + i + j);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
+			while(true) {
+				int i = (int) (Math.random()*resourcesCount);
+				int j = (int) (Math.random()*resourcesCount);
+				
+				if (i == j) continue;
+				
+				try {
+					acquireResources(i, j);
+					Thread.sleep(100 + i + j);
+					freeResources(i, j);
+				} catch (InterruptedException e) {
+					System.err.println("Thread: " + Thread.currentThread().getName() + " terminated");
+					return;
+				} catch (RuntimeException e) {
+					System.err.println(e.getMessage());
+					return;
+				}
+				
 			}
-			
-			freeResource(i, j);
 		}
 		
 		private void start() {
 			thread.start();
+		}
+		
+		private void shutdown() {
+			thread.interrupt();
 		}
 		
 	}

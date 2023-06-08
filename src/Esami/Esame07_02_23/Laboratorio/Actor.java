@@ -1,75 +1,72 @@
 package Esami.Esame07_02_23.Laboratorio;
 
 import java.util.List;
-import java.util.Random;
 
 public class Actor {
 	
-	private final List<Actor> actors;
-	private final Random random;
-		
+	private Thread thread;
+	private List<Resource> resources;
+	private List<Actor> actors;
+	
 	public Actor(List<Resource> resources, List<Actor> actors) {
-		
+		this.resources = resources;
 		this.actors = actors;
-		this.random = new Random();
 		
-		Thread thread = new Thread(() -> {
+		mainCicle();
+	}
+	
+	public void deliver(Message message) {
+		if (message.getValue() <= 0) return;
+		
+		synchronized (this) {
+			Actor actor;
+			do {
+				int random = (int) (Math.random()*actors.size());
+				actor = actors.get(random);
+			} while (actor == this);
 			
-			while (true) {
-				int value = random.nextInt(10);
-				int sleepTime = 0;
-				
-				// acquisizione
-				for (int i=0; i<value; ++i) {
-					try {
-						resources.get(i).acquire();
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
-				}
-				
-				// utilizzo
-				for (int i=0; i<value; ++i) {
-					sleepTime = sleepTime + resources.get(i).use();
-				}
-				
-				// sleep
+			System.out.println("delivering message: " + (message.getValue()-1));
+			actor.deliver(new Message(message.getValue()-1));
+			
+		}
+	}
+	
+	private void mainCicle() {
+		thread = new Thread(() -> {
+			while (true) {	
 				try {
-					Thread.sleep(sleepTime);
+					// aquisisco K risorse
+					int random = (int) (Math.random()*10);
+					for (int i=0; i<random; ++i) {
+						resources.get(i).acquire();
+					}
+					
+					// use
+					int somma = 0;
+					for (int i=0; i<random; ++i) {
+						somma += resources.get(i).use();
+					}
+					
+					// attesa
+					Thread.sleep(somma);
+					
+					// rilascio
+					for (int i=0; i<random; ++i) {
+						resources.get(i).release();
+					}
+					
+					deliver(new Message(somma));
 				} catch (InterruptedException e) {
-					e.printStackTrace();
+					System.err.println(Thread.currentThread().getName() + " terminated while doing his Actor job");
+					return;
 				}
-				
-				// rilascio
-				for (int i=0; i<value; ++i) {
-					resources.get(i).release();
-				}
-				
-				// messaggio
-				getAnotherRandomActor().deliver(new Message(sleepTime));
 			}
-			
 		});
 		
 		thread.start();
 	}
 	
-	public void deliver(Message message) {
-		if (message.getValue() < 0) return;
-		
-		synchronized (this) {
-			getAnotherRandomActor().deliver(new Message(message.getValue()-1));
-		}
+	public void stop() {
+		thread.interrupt();
 	}
-	
-	private Actor getAnotherRandomActor() {
-		Actor randomActor;
-		do {
-			int value = random.nextInt(actors.size());
-			randomActor = actors.get(value); 
-		} while (randomActor == this);
-		
-		return randomActor;
-	}
-	
 }

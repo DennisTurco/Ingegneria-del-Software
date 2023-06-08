@@ -10,19 +10,19 @@ public class ActorResourceFactory {
 		// blank
 	}
 	
+	// singleton
 	public static ActorResourceFactory getInstance() {
 		if (instance == null) {
 			instance = new ActorResourceFactory();
 		}
-		
 		return instance;
+	}
+	
+	public ResourceImpl createResorce(int ID) {
+		return new ResourceImpl(ID);
 	}
 	
 	public Actor createActor(List<Resource> resources, List<Actor> actors) {
 		return new Actor(resources, actors);
-	}
-	
-	public Resource createResource(int ID) {
-		return new ResourceImpl(ID);
 	}
 }

@@ -1,0 +1,6 @@
+
+Un Observer e' quando ho un oggetto che e' osservabile che contiene una lista di osservatori 
+(dinamica, ovvero che si possono aggiungere elementi alla lista o toglierli durante la vita dell'oggetto osservabile).
+
+Ogni volta che avviene un evento di interesse nell'oggetto osservabile, esso chiama un metodo (es. metodo update) su tutti gli observer 
+interressati (in ascolto).

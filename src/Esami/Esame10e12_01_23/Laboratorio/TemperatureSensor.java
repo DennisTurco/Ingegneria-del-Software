@@ -8,6 +8,6 @@ public interface TemperatureSensor {
 	public void start();
 	public void stop();
 	
-	public void attach(TemperatureObserver o);
-	public void detach(TemperatureObserver o);
+	public void attach(TemperatureObserver o); 
+	public void detach(TemperatureObserver o); 
 }

@@ -1,31 +1,27 @@
 package Esami.Esame10e12_01_23.Laboratorio;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.ArrayList;
 
 public class TemperatureSensorImpl implements TemperatureSensor {
 	
-	private final int ID;
-	private double temperature;
-	private List<TemperatureObserver> observers;
-	private ExecutorService threadPool;
-	private final Detector detector;
+	private final int id;
+	private Double temperature;
+	private ArrayList<TemperatureObserver> observers;
+	private Thread reader;
+	private SimpleThreadPool threadPool;
 	
-	public TemperatureSensorImpl(int ID, int count) {
-		if (ID <= 1) throw new IllegalArgumentException("ID <= 1");
+	public TemperatureSensorImpl(int id, int count) {
+		if (count <= 1) throw new IllegalArgumentException("count <= 1");
 		
-		this.ID = ID;
-		this.temperature = 0;
-		this.observers = new LinkedList<>(); 
+		this.id = id;
+		this.temperature = null;
+		this.observers = new ArrayList<>();
 		this.threadPool = new SimpleThreadPool(count);
-		this.detector = new Detector();
 	}
-	
 	
 	@Override
 	public int getID() {
-		// non mi serve la synchronized perche' ID e' final
-		return ID;
+		return id;
 	}
 
 	@Override
@@ -37,16 +33,42 @@ public class TemperatureSensorImpl implements TemperatureSensor {
 
 	@Override
 	public void start() {
-		System.out.println("starting sensor: " + ID);	
+		reader = new Thread(() -> {
+			while(true) {
+				readFromSensor();
+				notifyObservers();
+
+				try {
+					Thread.sleep(1000);
+				} catch (InterruptedException e) {
+					System.err.println(Thread.currentThread().getName() + " interrupted while waiting for a new temperature");
+					return;
+				}
+			}
+		});
 		
-		detector.start();
+		System.out.println("Starting sensor: " + id);
+		reader.start();
+	}
+
+	private void readFromSensor() {
+		synchronized (this) {
+			// genero una temperatura randomica tra 0 e 99.9
+			temperature = Math.random()*100; 
+		}
+	}
+
+	private void notifyObservers() {
+		for (TemperatureObserver observer: observers) {
+			threadPool.execute(() -> observer.update(this));
+		}
 	}
 
 	@Override
 	public void stop() {
-		System.out.println("stopping sensor: " + ID);
+		System.out.println("Stopping sensor: " + id);
 		
-		detector.shutdown();
+		reader.interrupt();
 		threadPool.shutdown();
 	}
 
@@ -62,56 +84,6 @@ public class TemperatureSensorImpl implements TemperatureSensor {
 		synchronized (this) {
 			observers.remove(o);
 		}
-	}
-	
-	private void setTemperature(double temperature) {
-		synchronized (this) {
-			this.temperature = temperature;
-		}
-	}
-	
-	private void notifyObservers() {
-		for (TemperatureObserver observer: observers) {
-			threadPool.execute(() -> {
-				observer.update(this);
-			});
-		}
-	}
-	
-	
-	// INNER CLASS 
-	private class Detector implements Runnable {
-		
-		private Thread thread;
-		
-		private Detector() {
-			this.thread = new Thread(this);
-		}
-		
-		@Override
-		public void run() {
-			while(true) {
-				double temperature = Math.random()*100;
-				
-				setTemperature(temperature);
-				notifyObservers();
-				
-				try {
-					Thread.sleep(1000);
-				} catch (InterruptedException e) {
-					return;
-				}
-			}
-		}
-		
-		private void start() {
-			thread.start();
-		}
-		
-		private void shutdown() {
-			thread.interrupt();
-		}
-		
 	}
 
 }

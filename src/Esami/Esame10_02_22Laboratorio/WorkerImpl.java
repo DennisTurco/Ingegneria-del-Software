@@ -2,25 +2,22 @@ package Esami.Esame10_02_22Laboratorio;
 
 public class WorkerImpl implements Worker {
 	
-	private WorkerManager manager;
+	private Corridor corridor;
 	
-	public WorkerImpl(WorkerManager manager) {
-		this.manager = manager;
+	public WorkerImpl(Corridor corridor) {
+		this.corridor = corridor;
 	}
-
+	
 	@Override
 	public void execute() {
-		
-		manager.getCorridor().enter();
-		
-		System.out.println("Thread id: " + Thread.currentThread().getId());
-		
-		manager.getCorridor().exit();
+		corridor.enter();
+		System.out.println("In corridor " + Thread.currentThread().getId());
+		corridor.exit();
 	}
 
 	@Override
 	public Corridor getCorridor() {
-		return manager.getCorridor();
+		return corridor;
 	}
 
 }

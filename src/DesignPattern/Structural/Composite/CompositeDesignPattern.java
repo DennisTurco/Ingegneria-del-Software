@@ -12,6 +12,9 @@ Goal:
 */
 
 
+// in questo esempio Employee e' come se fosse il nodo dell'albero
+// un'altro modo per farlo sarebbe quello di avere CompanyDirector come nodo (approccio opposto)
+
 //----------------------- a common interface
 interface Employee {
 	public void showEmployeeDetails();

@@ -2,9 +2,9 @@ package Esami.Esame10e12_01_23.Laboratorio;
 
 public class SimpleThreadPool implements ExecutorService {
 	
-	private BlockingQueue<Runnable> tasks;
 	private Worker[] workers;
 	private boolean shutdown;
+	private BlockingQueue<Runnable> tasks;
 	
 	public SimpleThreadPool(int count) {
 		if (count < 1) throw new IllegalArgumentException("count < 1");
@@ -23,20 +23,20 @@ public class SimpleThreadPool implements ExecutorService {
 	@Override
 	public void shutdown() {
 		synchronized (this) {
-			shutdown = true;
+			this.shutdown = true;
 			
 			for (int i=0; i<workers.length; ++i) {
 				workers[i].shutdown();
 			}
 		}
 	}
-
+	
 	@Override
-	public void execute(Runnable command) {
+	public void execute(Runnable task) {		
 		synchronized (this) {
 			if (shutdown) throw new IllegalStateException("shutdown == true");
 			
-			tasks.push(command);
+			tasks.push(task);
 		}
 	}
 	
@@ -53,22 +53,21 @@ public class SimpleThreadPool implements ExecutorService {
 		
 		@Override
 		public void run() {
-			while(true) {
+			while (true) {
 				if (shutdown) return;
 				
 				synchronized (this) {
 					try {
-						System.out.println("Threard: " + Thread.currentThread().getName() + " starting command");
-						
 						Runnable command = tasks.pop();
 						command.run();
-						
-					} catch (Throwable exception) {
+					} catch (InterruptedException e) {
+						System.err.println(Thread.currentThread().getName() + " interrupted while running a command");
 						return;
 					}
-					
+				
 				}
 			}
+				
 		}
 		
 		private void start() {
@@ -79,6 +78,6 @@ public class SimpleThreadPool implements ExecutorService {
 			shutdown = true;
 			thread.interrupt();
 		}
+		
 	}
-	
 }

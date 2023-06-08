@@ -11,30 +11,24 @@ public class LinkedBlockingQueue<T> implements BlockingQueue<T> {
 	}
 	
 	@Override
-	public void push(T elem) {
+	public T pop() throws InterruptedException {
 		synchronized (queue) {
-			queue.addLast(elem);
-			
-			if (queue.size() == 1) queue.notify();
-		}
-	}
-
-	@Override
-	public T pop() {
-		synchronized (queue) {
-			while (queue.size() == 0) {
-				try {
-					queue.wait();
-				} catch (InterruptedException e) {
-					return null;
-				}
-			}
+			while (queue.size() == 0) queue.wait();
 			
 			T result = queue.removeFirst();
 			
 			if (queue.size() > 0) queue.notify();
 			
 			return result;
+		}
+	}
+
+	@Override
+	public void push(T elem) {
+		synchronized (queue) {
+			queue.addLast(elem);
+			
+			if (queue.size() == 1) queue.notify();
 		}
 	}
 

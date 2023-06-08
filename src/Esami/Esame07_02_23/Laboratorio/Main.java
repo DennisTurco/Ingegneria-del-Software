@@ -1,39 +1,43 @@
 package Esami.Esame07_02_23.Laboratorio;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class Main {
+	
 	private static final int N = 10;
 	private static final int M = 100;
 	
-	private void go() {
+	public static void main(String[] args) {
+		
+		// creazione oggetti
 		ActorResourceFactory factory = ActorResourceFactory.getInstance();
 		
-		List<Actor> actors = new ArrayList<>(N);
-		List<Resource> resources = new ArrayList<>(M);
+		ArrayList<Actor> actors = new ArrayList<>(N);
+		ArrayList<Resource> resources = new ArrayList<>(M);
 		
-		
-		// prima creo le risorse
+		// creazione risorse
 		for (int i=0; i<M; ++i) {
-			resources.add(factory.createResource(i));
+			resources.add(factory.createResorce(i));
 		}
 		
-		// poi gli actors (gli actors lavorano sulle risorse)
+		// creazione attori
 		for (int i=0; i<N; ++i) {
 			actors.add(factory.createActor(resources, actors));
 		}
 		
-		// sleep di un minuto :(
+		// attesa
 		try {
-			Thread.sleep(1000 * 60);
-			System.out.println("Terminated");
+			Thread.sleep(1000 * 5);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-	}
-	
-	public static void main(String[] args) {
-		new Main().go();
+		
+		//stop dei threads
+		for (int i=0; i<N; ++i) {
+			actors.get(i).stop();
+		}
+
+		
+		System.out.println("Terminated");
 	}
 }

@@ -1,44 +1,23 @@
 package Esami.Esame10_02_22Laboratorio;
 
+import java.util.ArrayList;
 
 public class Main {
-	
-	private void go() {
-		
-		final int DIM = 10;
-		
-		WorkerManager manager = WorkerManager.getInstance();
-		
-		for (int i=0; i<DIM; ++i) {
-			Worker worker = new WorkerImpl(manager);
-			
-			InnerThread thread = new InnerThread(worker);
-			thread.start();
-		}
-	}
+	private static final int K = 50;
 	
 	public static void main(String[] args) {
-		new Main().go();
-	}
-	
-	private class InnerThread implements Runnable {
+		Corridor corridor = new CorridorImpl();
 		
-		private Worker worker;
-		private Thread thread;
+		WorkerManager manager = WorkerManager.getInstance(corridor, K);
+		ArrayList<Worker> workers = (ArrayList<Worker>) manager.getWorkers();
 		
-		private InnerThread(Worker worker) {
-			this.worker = worker;
-			this.thread = new Thread(this);
-		}
-		
-		@Override
-		public void run() {
-			worker.execute();
-			System.out.println("done " + Thread.currentThread().getId());
-		}
-		
-		private void start() {
-			thread.start();
+		for (int i=0; i<workers.size(); ++i) {
+			Worker worker = workers.get(i);
+			
+			new Thread(() -> {
+				worker.execute();
+				System.out.println("Done " + Thread.currentThread().getId());
+			}).start();
 		}
 		
 	}

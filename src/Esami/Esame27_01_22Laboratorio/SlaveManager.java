@@ -4,31 +4,38 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SlaveManager {
-	private static SlaveManager instance;
-	private List<Slave> list;
 	
-	private SlaveManager(int count) {
-		this.list = new ArrayList<>();
-		
-		for (int i=0; i<count; ++i) {
-			list.add(new SlaveImpl());
+	private static SlaveManager instance;
+	private List<SlaveImpl> slaves;
+	
+	private SlaveManager() {
+		// blank
+	}
+	
+	private SlaveManager(int slaves) {
+		if (slaves <= 0) throw new IllegalArgumentException("slaves <= 0"); 
+			
+		this.slaves = new ArrayList<>(slaves);
+		for (int i=0; i<slaves; ++i) {
+			this.slaves.add(new SlaveImpl());
 		}
 	}
 	
 	// singleton
-	public static SlaveManager getInstance(int count) {
+	public static SlaveManager getInstance(int slaves) {
 		if (instance == null) {
 			synchronized (SlaveManager.class) {
 				if (instance == null) {
-					instance = new SlaveManager(count);
+					instance = new SlaveManager(slaves);
 				}
 			}
-			
 		}
 		return instance;
 	}
 	
-	public List<Slave> getList() {
-		return list;
+	public List<SlaveImpl> getSlaves() {
+		return slaves;
 	}
+	
+	
 }
