@@ -6,22 +6,22 @@ programmi creati seguendo il corso "Ingegneria del Software" dell'Università di
 ```bash
 ├── src
 |    ├── Esami
-|    └── Example01
-|    └── Example02
-|    └── Example03
-|    └── Example04
-|    └── Example05
-|    └── Example06
-|    └── Example07
-|    └── Example08
-|    └── Example09
-|    └── Example10
-|    └── Example11
-|    └── Example12
-|    └── Example13
-|    └── Example14
-|    └── aspects
-|    └── concurrency
+|    ├── Example01
+|    ├── Example02
+|    ├── Example03
+|    ├── Example04
+|    ├── Example05
+|    ├── Example06
+|    ├── Example07
+|    ├── Example08
+|    ├── Example09
+|    ├── Example10
+|    ├── Example11
+|    ├── Example12
+|    ├── Example13
+|    ├── Example14
+|    ├── aspects
+|    ├── concurrency
 |    └── DesignPatterns
-├── IngegneriaDelSoftwareTEORIA.pdf
+└── IngegneriaDelSoftwareTEORIA.pdf
 ```
