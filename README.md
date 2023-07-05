@@ -1,7 +1,7 @@
 # Ingegneria-del-Software
 programmi creati seguendo il corso "Ingegneria del Software" dell'Università di Parma.
 
-DesignPattern
+
 
 ```bash
 ├── src
@@ -22,5 +22,6 @@ DesignPattern
 |    └── Example14
 |    └── aspects
 |    └── concurrency
+|    └── DesignPatterns
 ├── IngegneriaDelSoftwareTEORIA.pdf
 ```
