@@ -3,7 +3,7 @@ programmi creati seguendo il corso "Ingegneria del Software" dell'Università di
 
 DesignPattern
 
-'''bash
+```bash
 ├── src
 |    ├── Esami
 |    └── Example01
@@ -23,4 +23,4 @@ DesignPattern
 |    └── aspects
 |    └── concurrency
 ├── IngegneriaDelSoftwareTEORIA.pdf
-'''
+```
